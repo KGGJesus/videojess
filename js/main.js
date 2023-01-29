@@ -1,3 +1,7 @@
+//https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
+//https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Video_and_audio_APIs
+
+// Grab DOM elements
 const video = document.querySelector(".video");
 const playButton = document.querySelector(".play");
 const playButtonIcon = playButton.querySelector("i");
