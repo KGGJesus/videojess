@@ -1,8 +1,8 @@
 // Song data
 const songList = [
     {
-        title: "Acoustic Breeze",
-        file: "acousticbreeze.mp3",
+        title: "Sunflowe - Post Malone",
+        file: "Sunflower.mp3",
         cover: "1.jpeg"
 
     },
