@@ -1,19 +1,19 @@
 // Song data
 const songList = [
     {
-        title: "Sunflowe - Post Malone",
+        title: "Sunflower - Post Malone",
         file: "Sunflower.mp3",
         cover: "1.jpeg"
 
     },
     {
-        title: "A New Beginning",
-        file: "anewbeginning.mp3",
+        title: "Panini - LilNax",
+        file: "Panini.mp3",
         cover: "2.jpeg"
     },
     {
-        title: "Creative Minds",
-        file: "creativeminds.mp3",
+        title: "HOLIDAY - LilNax",
+        file: " HOLIDAY.mp3",
         cover: "3.jpeg"
     },
 ]
