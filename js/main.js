@@ -1,62 +1,163 @@
-//https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
-//https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Client-side_web_APIs/Video_and_audio_APIs
+// Song data
+const songList = [
+    {
+        title: "Acoustic Breeze",
+        file: "acousticbreeze.mp3",
+        cover: "1.jpeg"
 
-// Grab DOM elements
-const video = document.querySelector(".video");
-const playButton = document.querySelector(".play");
-const playButtonIcon = playButton.querySelector("i");
-const stopButton = document.querySelector(".stop");
-const progressBar = document.querySelector(".progress")
-const timestamp = document.querySelector(".timestamp")
+    },
+    {
+        title: "A New Beginning",
+        file: "anewbeginning.mp3",
+        cover: "2.jpeg"
+    },
+    {
+        title: "Creative Minds",
+        file: "creativeminds.mp3",
+        cover: "3.jpeg"
+    },
+]
 
-// Listen for events
-video.addEventListener("click", playPauseVideo);
-progressBar.addEventListener("change", setVideoProgress)
-playButton.addEventListener("click", playPauseVideo);
-stopButton.addEventListener("click", stopVideo);
-video.addEventListener("timeupdate", updateVideoProgress)
+// Canción actual
+let actualSong = null
 
-// Utility functions
-function playPauseVideo() {
-//   if (video.paused) {
-//     video.play();
-//   } else {
-//     video.pause();
-//   }
-    video[video.paused ? "play" : "pause"]()
-    playButtonToggleIcon()
-}
+// Capturar elementos del DOM para trabajar con JS
+const songs = document.getElementById("songs")
+const audio = document.getElementById("audio")
+const cover = document.getElementById("cover")
+const title = document.getElementById("title")
+const play = document.getElementById("play")
+const prev = document.getElementById("prev")
+const next = document.getElementById("next")
+const progress = document.getElementById("progress")
+const progressContainer = document.getElementById("progress-container")
+progressContainer.addEventListener("click", setProgress)
 
-function playButtonToggleIcon() {
-    if (video.paused) {
-        playButtonIcon.classList.remove("fa-pause")
-        playButtonIcon.classList.add("fa-play")
+// Escuchar el elemento AUDIO
+audio.addEventListener("timeupdate", updateProgress)
+
+// Escuchar clicks en los controles
+play.addEventListener("click", () => {
+    if (audio.paused) {
+        playSong()   
     } else {
-        playButtonIcon.classList.remove("fa-play")
-        playButtonIcon.classList.add("fa-pause")
+        pauseSong()
+    }
+})
+
+next.addEventListener("click", () => nextSong())
+prev.addEventListener("click", () => prevSong())
+
+// Cargar canciones y mostrar el listado
+function loadSongs() {
+    songList.forEach((song, index) => {
+        // Crear li
+        const li = document.createElement("li")
+        // Crear a
+        const link = document.createElement("a")
+        // Hidratar a
+        link.textContent = song.title
+        link.href = "#"
+        // Escuchar clicks
+        link.addEventListener("click", () => loadSong(index))
+        // Añadir a li
+        li.appendChild(link)
+        // Aañadir li a ul
+        songs.appendChild(li)
+    })
+}
+
+// Cargar canción seleccionada
+function loadSong(songIndex) {
+    if (songIndex !== actualSong) {
+        changeActiveClass(actualSong, songIndex)
+        actualSong = songIndex
+        audio.src = "./audio/" + songList[songIndex].file
+        playSong()
+        changeSongtitle(songIndex)
+        changeCover(songIndex)
     }
 }
 
-function stopVideo() {
-    video.pause()
-    video.currentTime = 0
-    playButtonToggleIcon()
-    progressBar.value = 0
+// Actualizar barra de progreso de la canción
+function updateProgress(event) {
+    const {duration, currentTime} = event.srcElement
+    const percent = (currentTime / duration) * 100
+    progress.style.width = percent + "%" 
 }
 
-function setVideoProgress() {
-    video.currentTime = Number((progressBar.value * video.duration) / 100)
+// Hacer la barra de progreso clicable
+function setProgress(event) {
+    const totalWidth = this.offsetWidth
+    const progressWidth = event.offsetX
+    const current = (progressWidth / totalWidth) * audio.duration
+    audio.currentTime = current
 }
 
-function updateVideoProgress() {
-    progressBar.value = Number((video.currentTime / video.duration) * 100)
-    let minutes = Math.floor(video.currentTime / 60)    
-    let seconds = Math.floor(video.currentTime % 60)
-    if (minutes < 10) {
-        minutes = "0" + minutes
+// Actualiar controles
+function updateControls() {
+    if (audio.paused) {
+        play.classList.remove("fa-pause")
+        play.classList.add("fa-play")
+    } else {
+        play.classList.add("fa-pause")
+        play.classList.remove("fa-play")
     }
-    if (seconds < 10) {
-        seconds = "0" + seconds
-    }
-    timestamp.textContent = `${minutes}:${seconds}`
 }
+
+// Reproducir canción
+function playSong() {
+    if (actualSong !== null) {
+        audio.play()
+        updateControls()
+    }
+}
+
+// Pausar canción
+function pauseSong() {
+    audio.pause()
+    updateControls()
+}
+
+// Cambiar clase activa
+function changeActiveClass(lastIndex, newIndex) {
+    const links = document.querySelectorAll("a")
+    if (lastIndex !== null) {
+        links[lastIndex].classList.remove("active")
+    }
+    links[newIndex].classList.add("active")
+}
+
+// Cambiar el cover de la canción
+function changeCover(songIndex) {
+    cover.src = "./img/" + songList[songIndex].cover
+}
+
+// Cambiar el título de la canción
+function changeSongtitle(songIndex) {
+     title.innerText = songList[songIndex].title
+}
+
+// Anterior canción
+function prevSong() {
+    if (actualSong > 0) {
+        loadSong(actualSong - 1)
+    } else {
+        loadSong(songList.length - 1)
+    }
+}
+
+// Siguiente canción
+function nextSong() {
+    if (actualSong < songList.length -1) {
+        loadSong(actualSong + 1)
+    } else {
+        loadSong(0)
+    }
+}
+
+// Lanzar siguiente canción cuando se acaba la actual
+audio.addEventListener("ended", () => nextSong())
+
+// GO!
+loadSongs()
